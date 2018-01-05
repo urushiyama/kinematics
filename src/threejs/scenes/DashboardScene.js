@@ -1,3 +1,4 @@
+import { sizeMe } from 'react-sizeme';
 import React, {Component} from 'react';
 import * as THREE from 'three';
 
@@ -46,8 +47,12 @@ class DashboardScene extends Component {
   }
 
   render() {
-    return <World onAnimate={this.onAnimate} objects={this.renderCube()}/>;
+    return (
+      <div style={{height: '100%', width: '100%'}}>
+        <World onAnimate={this.onAnimate} objects={this.renderCube()} size={this.props.size}/>
+      </div>
+    );
   }
 }
 
-export default DashboardScene;
+export default sizeMe({monitorHeight:true})(DashboardScene);

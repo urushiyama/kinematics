@@ -1,8 +1,11 @@
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Reboot } from 'material-ui';
 import React, { Component } from 'react';
 
 import Dashboard from './Dashboard';
 import NoMatch from './NoMatch';
+
+import './styles/App.css';
 
 class App extends Component {
   render() {

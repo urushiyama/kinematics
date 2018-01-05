@@ -1,7 +1,9 @@
+import { sizeMe } from 'react-sizeme';
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import React3 from 'react-three-renderer';
 import * as THREE from 'three';
+
+import PropTypes from 'prop-types';
 
 import Field from '../models/Field';
 import ThreeAxisArrows from '../helpers/ThreeAxisArrows';
@@ -49,8 +51,9 @@ class World extends Component {
   }
 
   render() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = this.props.size.width;
+    const height = this.props.size.height;
+    console.dir(this.props.size);
     const arrowsLength = (this.controls !== undefined)
       ? this.controls.object.position.distanceTo(this.state.origin) / 5
       : 1;
@@ -87,7 +90,11 @@ class World extends Component {
 
 World.propTypes = {
   onAnimate: PropTypes.func,
-  objects: PropTypes.element.isRequired
+  objects: PropTypes.element.isRequired,
+  size: PropTypes.shape({
+    width: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired,
+  })
 }
 
 export default World;
