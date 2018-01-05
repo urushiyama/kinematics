@@ -48,8 +48,8 @@ class DashboardScene extends Component {
 
   render() {
     return (
-      <div style={{height: '100%', width: '100%'}}>
-        <World onAnimate={this.onAnimate} objects={this.renderCube()} size={this.props.size}/>
+      <div style={{height: '100%', width: '100%'}} ref="canvas">
+        <World onAnimate={this.onAnimate} objects={this.renderCube()} {...this.props} canvasDOM={this.refs.canvas}/>
       </div>
     );
   }

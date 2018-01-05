@@ -1,4 +1,3 @@
-import { sizeMe } from 'react-sizeme';
 import React, {Component} from 'react';
 import React3 from 'react-three-renderer';
 import * as THREE from 'three';
@@ -36,26 +35,36 @@ class World extends Component {
         length: 10
       },
       fog: new THREE.FogExp2(styles.distantPlace.color, styles.distantPlace.fogDensity),
-      background: styles.distantPlace.color
+      background: styles.distantPlace.color,
+      controls: null
     }
   }
 
-  componentDidMount() {
-    const controls = new OrbitControls(this.refs.camera);
-    this.controls = controls;
+  // componentDidMount() {
+  //   const controls = new OrbitControls(this.refs.camera, this.props.canvasDOM);
+  //   this.controls = controls;
+  // }
+
+  componentWillReceiveProps = nextProps => {
+    if (nextProps.canvasDOM !== undefined && this.refs.camera !== undefined && this.state.controls === null) {
+      const controls = new OrbitControls(this.refs.camera, nextProps.canvasDOM);
+      this.setState({controls: controls});
+    }
   }
 
   componentWillUnmount() {
-    this.controls.dispose();
-    delete this.controls;
+    if (this.state.controls !== null) {
+      this.state.controls.dispose();
+      delete this.state.controls;
+    }
   }
 
   render() {
     const width = this.props.size.width;
     const height = this.props.size.height;
-    console.dir(this.props.size);
-    const arrowsLength = (this.controls !== undefined)
-      ? this.controls.object.position.distanceTo(this.state.origin) / 5
+    const controls = this.state.controls;
+    const arrowsLength = (controls !== null && controls.object !== undefined)
+      ? controls.object.position.distanceTo(this.state.origin) / 5
       : 1;
     return (
       <React3
@@ -91,10 +100,7 @@ class World extends Component {
 World.propTypes = {
   onAnimate: PropTypes.func,
   objects: PropTypes.element.isRequired,
-  size: PropTypes.shape({
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
-  })
+  canvasDOM: PropTypes.any
 }
 
 export default World;
