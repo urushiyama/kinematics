@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DashboardScene from './threejs/DashboardScene';
+import DashboardScene from './threejs/scenes/DashboardScene';
 import NavigationBar from './NavigationBar';
 
 const Dashboard = props => {
