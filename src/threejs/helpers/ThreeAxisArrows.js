@@ -19,7 +19,7 @@ const arrows = {
 
 const ThreeAxisArrows = props => {
   return (
-    <group>
+    <group visible={props.visible}>
       <arrowHelper origin={props.origin} length={props.length} dir={arrows.x.direction} color={arrows.x.color}/>
       <arrowHelper origin={props.origin} length={props.length} dir={arrows.y.direction} color={arrows.y.color}/>
       <arrowHelper origin={props.origin} length={props.length} dir={arrows.z.direction} color={arrows.z.color}/>
@@ -28,12 +28,15 @@ const ThreeAxisArrows = props => {
 }
 
 ThreeAxisArrows.defaultProps = {
-  length: 1
+  origin: new THREE.Vector3(0, 0, 0),
+  length: 1,
+  visible: true
 }
 
 ThreeAxisArrows.propTypes = {
-  origin: PropTypes.instanceOf(THREE.Vector3).isRequired,
-  length: PropTypes.number
+  origin: PropTypes.instanceOf(THREE.Vector3),
+  length: PropTypes.number,
+  visible: PropTypes.bool
 }
 
 export default ThreeAxisArrows;

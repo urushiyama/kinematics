@@ -2,6 +2,7 @@ import { sizeMe } from 'react-sizeme';
 import React, {Component} from 'react';
 import * as THREE from 'three';
 
+import Robot from '../models/Robot';
 import World from './World';
 
 class DashboardScene extends Component {
@@ -49,7 +50,7 @@ class DashboardScene extends Component {
   render() {
     return (
       <div style={{height: '100%', width: '100%'}} ref="canvas">
-        <World onAnimate={this.onAnimate} objects={this.renderCube()} {...this.props} canvasDOM={this.refs.canvas}/>
+        <World onAnimate={this.onAnimate} objects={<Robot/>} {...this.props} canvasDOM={this.refs.canvas}/>
       </div>
     );
   }
