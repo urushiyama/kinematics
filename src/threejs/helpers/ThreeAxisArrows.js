@@ -30,7 +30,7 @@ const ThreeAxisArrows = props => {
 ThreeAxisArrows.defaultProps = {
   origin: new THREE.Vector3(0, 0, 0),
   length: 1,
-  visible: true
+  visible: false
 }
 
 ThreeAxisArrows.propTypes = {

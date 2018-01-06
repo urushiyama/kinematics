@@ -18,7 +18,7 @@ Joint.propTypes = {
     PropTypes.string,
     PropTypes.number,
     PropTypes.instanceOf(THREE.Color)
-  ])
+  ]).isRequired
 }
 
 export default Joint;
