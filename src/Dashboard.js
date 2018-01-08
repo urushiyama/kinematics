@@ -1,4 +1,5 @@
 import { Button, Grid, Paper, Typography } from 'material-ui';
+import { Link } from 'react-router-dom';
 import React from 'react';
 
 import DashboardScene from './threejs/scenes/DashboardScene';
@@ -42,8 +43,10 @@ const Dashboard = props => {
             </Grid>
             <Grid item xs={12} md={4} style={styles.item}>
               <Paper style={styles.paper}>
-                <Typography type="headline">Controllers</Typography>
-                <Button raised>PUSH ME!</Button>
+                <Typography type="headline">Links</Typography>
+                <Link to="/Kinematics">
+                  <Button raised>順運動学のデモ</Button>
+                </Link>
               </Paper>
             </Grid>
           </Grid>

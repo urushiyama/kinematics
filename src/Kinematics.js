@@ -1,4 +1,5 @@
-import { Grid, Paper, TextField, Typography } from 'material-ui';
+import { Button, Grid, Paper, TextField, Typography } from 'material-ui';
+import { Link } from 'react-router-dom';
 import React, { Component } from 'react';
 
 import KinematicsScene from './threejs/scenes/KinematicsScene';
@@ -107,7 +108,7 @@ class Kinematics extends Component {
   render() {
     return (
       <div style={styles.item}>
-        <NavigationBar title="Dashboard"/>
+        <NavigationBar title="Kinematics"/>
         <Grid container style={styles.content}>
           <Grid item xs={12} style={styles.item}>
             <Grid container justify="center" alignItems="stretch" style={styles.item}>
@@ -155,6 +156,9 @@ class Kinematics extends Component {
                     value={this.state.input.arms[2].phi}
                     onChange={this.onChangeArms('arm-2-phi')}
                   />
+                  <Link to="/">
+                    <Button raised>戻る</Button>
+                  </Link>
                 </Paper>
               </Grid>
             </Grid>
