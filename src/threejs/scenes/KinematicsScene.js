@@ -4,7 +4,7 @@ import React, {Component} from 'react';
 import Robot from '../models/Robot';
 import World from './World';
 
-class DashboardScene extends Component {
+class KinematicsScene extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,10 +20,10 @@ class DashboardScene extends Component {
   render() {
     return (
       <div style={{height: '100%', width: '100%'}} ref={this.refCanvas}>
-        <World onAnimate={this.props.onAnimate} objects={<Robot arms={[{length: 10, phi: 20}, {length: 10, phi: 50}, {length: 20, phi: 30}]}/>} {...this.props} canvasDOM={this.state.canvas}/>
+        <World onAnimate={this.props.onAnimate} objects={<Robot arms={this.props.arms}/>} {...this.props} canvasDOM={this.state.canvas}/>
       </div>
     );
   }
 }
 
-export default sizeMe({monitorHeight:true})(DashboardScene);
+export default sizeMe({monitorHeight:true})(KinematicsScene);

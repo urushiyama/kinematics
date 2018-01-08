@@ -36,17 +36,20 @@ class World extends Component {
       },
       fog: new THREE.FogExp2(styles.distantPlace.color, styles.distantPlace.fogDensity),
       background: styles.distantPlace.color,
-      controls: null
+      controls: null,
+      canvasDOM: props.canvasDOM
     }
   }
 
   // componentDidMount() {
-  //   const controls = new OrbitControls(this.refs.camera, this.props.canvasDOM);
-  //   this.controls = controls;
+  //   if (this.state.canvasDOM != null && this.refs.camera !== undefined && this.state.controls === null) {
+  //     const controls = new OrbitControls(this.refs.camera, this.state.canvasDOM);
+  //     this.setState({controls: controls});
+  //   }
   // }
 
   componentWillReceiveProps = nextProps => {
-    if (nextProps.canvasDOM !== undefined && this.refs.camera !== undefined && this.state.controls === null) {
+    if (nextProps.canvasDOM != null && this.refs.camera !== undefined && this.state.controls === null) {
       const controls = new OrbitControls(this.refs.camera, nextProps.canvasDOM);
       this.setState({controls: controls});
     }

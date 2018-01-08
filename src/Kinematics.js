@@ -1,7 +1,7 @@
 import { Grid, Paper, TextField, Typography } from 'material-ui';
 import React, { Component } from 'react';
 
-import KinematicsScene from './threejs/scenes/DashboardScene';
+import KinematicsScene from './threejs/scenes/KinematicsScene';
 import NavigationBar from './NavigationBar';
 
 const styles = {
@@ -42,34 +42,39 @@ class Kinematics extends Component {
 
   onChangeArms = event => {
     const newArms = this.state.arms.slice();
+    const newValue = Number.parseInt(event.target.value, 10);
     switch (event.target.name) {
       case "arm-0-length":
-        newArms[0].length = event.target.value;
+        newArms[0].length = newValue;
         this.setState({arms: newArms});
         break;
       case "arm-0-phi":
-        newArms[0].phi = event.target.value;
+        newArms[0].phi = newValue;
         this.setState({arms: newArms});
         break;
       case "arm-1-length":
-        newArms[1].length = event.target.value;
+        newArms[1].length = newValue;
         this.setState({arms: newArms});
         break;
       case "arm-1-phi":
-        newArms[1].phi = event.target.value;
+        newArms[1].phi = newValue;
         this.setState({arms: newArms});
         break;
       case "arm-2-length":
-        newArms[2].length = event.target.value;
+        newArms[2].length = newValue;
         this.setState({arms: newArms});
         break;
       case "arm-2-phi":
-        newArms[2].phi = event.target.value;
+        newArms[2].phi = newValue;
         this.setState({arms: newArms});
         break;
       default:
         // no change
     }
+  }
+
+  onAnimate = () => {
+
   }
 
   render() {
@@ -81,7 +86,7 @@ class Kinematics extends Component {
             <Grid container justify="center" alignItems="stretch" style={styles.item}>
               <Grid item xs={12} md={8} style={styles.item}>
                 <div style={styles.view}>
-                  <KinematicsScene arms={this.state.arms}/>
+                  <KinematicsScene arms={this.state.arms} onAnimate={this.onAnimate}/>
                 </div>
               </Grid>
               <Grid item xs={12} md={4} style={styles.item}>
