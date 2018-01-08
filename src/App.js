@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import React, { Component } from 'react';
 
 import Dashboard from './Dashboard';
+import Kinematics from './Kinematics';
 import NoMatch from './NoMatch';
 
 class App extends Component {
@@ -12,6 +13,7 @@ class App extends Component {
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Dashboard}/>
+          <Route path="/kinematics" component={Kinematics}/>
           <Route component={NoMatch}/>
         </Switch>
       </BrowserRouter>
