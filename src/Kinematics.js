@@ -36,40 +36,67 @@ class Kinematics extends Component {
         {length: 10, phi: 0},
         {length: 10, phi: 20},
         {length: 10, phi: -40}
-      ]
+      ],
+      input: {
+        arms: [
+          {length: '10', phi: '0'},
+          {length: '10', phi: '20'},
+          {length: '10', phi: '-40'}
+        ],
+      }
     };
   }
 
-  onChangeArms = event => {
-    const newArms = this.state.arms.slice();
-    const newValue = Number.parseInt(event.target.value, 10);
-    switch (event.target.name) {
+  onChangeArms = (name) => (event) => {
+    const parseNumber = (string) => {
+      if(/^(-|\+)?[0-9]+(\.[0-9]+)?$/.test(value)) {
+        return Number(value);
+      } else {
+        return NaN;
+      }
+    }
+    const newArms = this.state.arms.map(object => Object.assign({}, object));
+    const newInputArms = this.state.input.arms.map(object => Object.assign({}, object));
+    const value = event.target.value;
+    const valueNumber = parseNumber(value);
+    const isValid = (!Number.isNaN(valueNumber));
+    switch (name) {
       case "arm-0-length":
-        newArms[0].length = newValue;
-        this.setState({arms: newArms});
+        newInputArms[0].length = value;
+        newArms[0].length = valueNumber;
         break;
       case "arm-0-phi":
-        newArms[0].phi = newValue;
-        this.setState({arms: newArms});
+        newInputArms[0].phi = value;
+        newArms[0].phi = valueNumber;
         break;
       case "arm-1-length":
-        newArms[1].length = newValue;
-        this.setState({arms: newArms});
+        newInputArms[1].length = value;
+        newArms[1].length = valueNumber;
         break;
       case "arm-1-phi":
-        newArms[1].phi = newValue;
-        this.setState({arms: newArms});
+        newInputArms[1].phi = value;
+        newArms[1].phi = valueNumber;
         break;
       case "arm-2-length":
-        newArms[2].length = newValue;
-        this.setState({arms: newArms});
+        newInputArms[2].length = value;
+        newArms[2].length = valueNumber;
         break;
       case "arm-2-phi":
-        newArms[2].phi = newValue;
-        this.setState({arms: newArms});
+        newInputArms[2].phi = value;
+        newArms[2].phi = valueNumber;
         break;
       default:
         // no change
+    }
+    if (isValid) {
+      this.setState({
+        arms: newArms,
+        input: {arms: newInputArms}
+      });
+    } else {
+      this.setState({
+        input: {arms: newInputArms}
+      })
     }
   }
 
@@ -93,46 +120,40 @@ class Kinematics extends Component {
                 <Paper style={styles.paper}>
                   <Typography type="headline">Controllers</Typography>
                   <TextField
-                    name="arm-0-length"
                     label="a1"
                     type="number"
-                    value={this.state.arms[0].length}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[0].length}
+                    onChange={this.onChangeArms('arm-0-length')}
                   />
                   <TextField
-                    name="arm-0-phi"
                     label="φ1"
                     type="number"
-                    value={this.state.arms[0].phi}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[0].phi}
+                    onChange={this.onChangeArms('arm-0-phi')}
                   />
                   <TextField
-                    name="arm-1-length"
                     label="a2"
                     type="number"
-                    value={this.state.arms[1].length}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[1].length}
+                    onChange={this.onChangeArms('arm-1-length')}
                   />
                   <TextField
-                    name="arm-1-phi"
                     label="φ2"
                     type="number"
-                    value={this.state.arms[1].phi}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[1].phi}
+                    onChange={this.onChangeArms('arm-1-phi')}
                   />
                   <TextField
-                    name="arm-2-length"
                     label="a3"
                     type="number"
-                    value={this.state.arms[2].length}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[2].length}
+                    onChange={this.onChangeArms('arm-2-length')}
                   />
                   <TextField
-                    name="arm-2-phi"
                     label="φ3"
                     type="number"
-                    value={this.state.arms[2].phi}
-                    onChange={this.onChangeArms}
+                    value={this.state.input.arms[2].phi}
+                    onChange={this.onChangeArms('arm-2-phi')}
                   />
                 </Paper>
               </Grid>
