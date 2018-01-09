@@ -20,7 +20,9 @@ class KinematicsScene extends Component {
   render() {
     return (
       <div style={{height: '100%', width: '100%'}} ref={this.refCanvas}>
-        <World onAnimate={this.props.onAnimate} objects={<Robot arms={this.props.arms}/>} {...this.props} canvasDOM={this.state.canvas}/>
+        <World onAnimate={this.props.onAnimate} {...this.props} canvasDOM={this.state.canvas}>
+          <Robot arms={this.props.arms}/>
+        </World>
       </div>
     );
   }

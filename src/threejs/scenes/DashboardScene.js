@@ -20,7 +20,9 @@ class DashboardScene extends Component {
   render() {
     return (
       <div style={{height: '100%', width: '100%'}} ref={this.refCanvas}>
-        <World onAnimate={this.props.onAnimate} objects={<Robot arms={[{length: 10, phi: 20}, {length: 10, phi: 50}, {length: 20, phi: 30}]}/>} {...this.props} canvasDOM={this.state.canvas}/>
+        <World onAnimate={this.props.onAnimate} {...this.props} canvasDOM={this.state.canvas}>
+          <Robot arms={[{length: 10, phi: 20}, {length: 10, phi: 50}, {length: 20, phi: 30}]}/>
+        </World>
       </div>
     );
   }

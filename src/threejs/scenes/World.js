@@ -93,7 +93,7 @@ class World extends Component {
           <ThreeAxisArrows origin={this.state.origin} length={arrowsLength} />
           <spotLight {...this.state.spotLight} />
           <Field width={1000} height={1000} color={"#5e5e5e"} />
-          {this.props.objects}
+          {this.props.children}
         </scene>
       </React3>
     );
@@ -102,7 +102,10 @@ class World extends Component {
 
 World.propTypes = {
   onAnimate: PropTypes.func,
-  objects: PropTypes.element.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.arrayOf(PropTypes.element)
+  ]),
   canvasDOM: PropTypes.any
 }
 
