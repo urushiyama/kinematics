@@ -12,7 +12,7 @@ const OrbitControls = require('three-orbit-controls')(THREE);
 const styles = {
   distantPlace: {
     color: new THREE.Color("#DDDDDD"),
-    fogDensity: 0.0125
+    fogDensity: 0.00625
   }
 }
 
@@ -51,24 +51,35 @@ class World extends Component {
   componentWillReceiveProps = nextProps => {
     if (nextProps.canvasDOM != null && this.refs.camera !== undefined && this.state.controls === null) {
       const controls = new OrbitControls(this.refs.camera, nextProps.canvasDOM);
+      controls.addEventListener('change', this.updateArrowsLength);
       this.setState({controls: controls});
     }
   }
 
   componentWillUnmount() {
     if (this.state.controls !== null) {
+      this.state.controls.removeEventListener('change', this.updateArrowsLength);
       this.state.controls.dispose();
       delete this.state.controls;
     }
   }
 
+  updateArrowsLength = () => {
+    const controls = this.state.controls;
+    const length = (controls !== null && controls.object !== undefined)
+      ? controls.object.position.distanceTo(this.state.origin) / 5
+      : this.state.arrows.length;
+    this.setState({arrows: {length: length}});
+  }
+
   render() {
     const width = this.props.size.width;
     const height = this.props.size.height;
-    const controls = this.state.controls;
-    const arrowsLength = (controls !== null && controls.object !== undefined)
-      ? controls.object.position.distanceTo(this.state.origin) / 5
-      : 1;
+    // const controls = this.state.controls;
+    // const arrowsLength = (controls !== null && controls.object !== undefined)
+    //   ? controls.object.position.distanceTo(this.state.origin) / 5
+    //   : 1;
+    // if (controls !== null) console.dir(controls.object);
     return (
       <React3
         mainCamera="camera"
@@ -88,9 +99,9 @@ class World extends Component {
             far={1000}
             {...this.state.camera}
           />
-          <gridHelper size={200} step={50} />
+          <gridHelper size={1000} step={50} />
           <axisHelper size={1000} />
-          <ThreeAxisArrows origin={this.state.origin} length={arrowsLength} />
+          <ThreeAxisArrows origin={this.state.origin} length={this.state.arrows.length} visible />
           <spotLight {...this.state.spotLight} />
           <Field width={1000} height={1000} color={"#5e5e5e"} />
           {this.props.children}

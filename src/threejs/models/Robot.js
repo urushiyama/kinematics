@@ -114,8 +114,8 @@ class Robot extends Component {
     };
   }
 
-  render() {
-  return (
+  renderHierarchically = () => {
+    return (
       <group>
         <RobotArm
           origin={this.state.base.origin}
@@ -189,13 +189,94 @@ class Robot extends Component {
       </group>
     );
   }
+
+  renderIndividually = () => {
+    return (
+      <group>
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          position={this.state.base.position}
+          rotation={this.state.base.rotation}
+          model={
+            <RobotArmCylinder
+              radius={this.state.base.radius}
+              length={this.state.base.length}
+              color={this.state.color}
+              {...this.state.base.model}
+            />
+          }
+        />
+        <RobotArm
+          origin={this.state.arms[0].origin}
+          visibleAxisArrows
+          position={this.state.arms[0].position}
+          rotation={this.state.arms[0].rotation}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[0].radius}
+              length={this.state.arms[0].length}
+              color={this.state.color}
+              {...this.state.arms[0].model}
+            />
+          }
+        />
+        <RobotArm
+          origin={this.state.arms[1].origin}
+          visibleAxisArrows
+          position={this.state.arms[1].position}
+          rotation={this.state.arms[1].rotation}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[1].radius}
+              length={this.state.arms[1].length}
+              color={this.state.color}
+            />
+          }
+        />
+        <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        <RobotArm
+          origin={this.state.arms[2].origin}
+          visibleAxisArrows
+          position={this.state.arms[2].position}
+          rotation={this.state.arms[2].rotation}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[2].radius}
+              length={this.state.arms[2].length}
+              color={this.state.color}
+            />
+          }
+        />
+        <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        <RobotArm
+          origin={this.state.hand.origin}
+          visibleAxisArrows
+          position={this.state.hand.position}
+          rotation={this.state.hand.rotation}
+          model={
+            <Joint radius={this.state.joint.radius} color={this.state.color}/>
+          }
+        />
+      </group>
+    );
+  }
+
+  render() {
+    if (this.props.renderIndividually) {
+      return this.renderIndividually();
+    } else {
+      return this.renderHierarchically();
+    }
+  }
 }
 
 Robot.propTypes = {
   arms: PropTypes.arrayOf(PropTypes.shape({
     length: PropTypes.number.isRequired,
     phi: PropTypes.number.isRequired
-  }))
+  })),
+  renderIndividually: PropTypes.bool
 }
 
 export default Robot;

@@ -1,5 +1,6 @@
 import { sizeMe } from 'react-sizeme';
 import React, {Component} from 'react';
+import * as THREE from 'three';
 
 import Robot from '../models/Robot';
 import World from './World';
@@ -8,7 +9,15 @@ class KinematicsScene extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      canvas: null
+      canvas: null,
+      renderIndividually: {
+        position: new THREE.Vector3(10, 0, 10),
+        rotation: new THREE.Euler()
+      },
+      renderHierarchically: {
+        position: new THREE.Vector3(-10, 0, -10),
+        rotation: new THREE.Euler()
+      }
     }
   }
 
@@ -21,7 +30,14 @@ class KinematicsScene extends Component {
     return (
       <div style={{height: '100%', width: '100%'}} ref={this.refCanvas}>
         <World onAnimate={this.props.onAnimate} {...this.props} canvasDOM={this.state.canvas}>
-          <Robot arms={this.props.arms}/>
+          <group>
+            <group {...this.state.renderIndividually}>
+              <Robot arms={this.props.arms} renderIndividually />
+            </group>
+            <group {...this.state.renderHierarchically}>
+              <Robot arms={this.props.arms}/>
+            </group>
+          </group>
         </World>
       </div>
     );
