@@ -208,7 +208,7 @@ class Robot extends Component {
           }
         />
         <RobotArm
-          origin={this.state.arms[0].origin}
+          origin={this.state.base.origin}
           visibleAxisArrows
           position={this.state.arms[0].position}
           rotation={this.state.arms[0].rotation}
@@ -222,7 +222,7 @@ class Robot extends Component {
           }
         />
         <RobotArm
-          origin={this.state.arms[1].origin}
+          origin={this.state.base.origin}
           visibleAxisArrows
           position={this.state.arms[1].position}
           rotation={this.state.arms[1].rotation}
@@ -234,9 +234,11 @@ class Robot extends Component {
             />
           }
         />
-        <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        <group {...this.state.base.origin}>
+          <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        </group>
         <RobotArm
-          origin={this.state.arms[2].origin}
+          origin={this.state.base.origin}
           visibleAxisArrows
           position={this.state.arms[2].position}
           rotation={this.state.arms[2].rotation}
@@ -248,9 +250,11 @@ class Robot extends Component {
             />
           }
         />
-        <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        <group {...this.state.base.origin}>
+          <Joint radius={this.state.joint.radius} color={this.state.color}/>
+        </group>
         <RobotArm
-          origin={this.state.hand.origin}
+          origin={this.state.base.origin}
           visibleAxisArrows
           position={this.state.hand.position}
           rotation={this.state.hand.rotation}
