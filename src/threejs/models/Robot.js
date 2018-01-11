@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Joint from './Joint';
 import RobotArm from './RobotArm';
 import RobotArmCylinder from './RobotArmCylinder';
+import ThreeAxisArrows from '../helpers/ThreeAxisArrows';
 
 const _initialState = {
   color: "#DDDDDD",
@@ -69,7 +70,14 @@ const _initialState = {
     },
     position: new THREE.Vector3(0, 0, 0),
     rotation: new THREE.Euler(0, 0, 0)
-  }
+  },
+  DHVars: [
+    {a: 0, alpha: 0, d: 4, phi: THREE.Math.degToRad(20)},
+    {a: 0, alpha: 0, d: 10, phi: 0},
+    {a: 0, alpha: THREE.Math.degToRad(90), d: 0, phi: THREE.Math.degToRad(20)},
+    {a: 10, alpha: 0, d: 0, phi: THREE.Math.degToRad(-50)},
+    {a: 10, alpha: 0, d: 0, phi: 0}
+  ]
 };
 
 class Robot extends Component {
@@ -114,6 +122,153 @@ class Robot extends Component {
     };
   }
 
+  /**
+   * 隣接する座標系$\Sigma_{i-1}$から$\Sigma_i$への同次変換行列を返す。
+   * @param {number} a      : $X_{i-1}$軸方向への並進成分
+   * @param {number} alpha  : $X_{i_1}$軸周りの回転成分（ラジアン）
+   * @param {number} d      : alphaで回転後の$Z_{i-1}$軸方向の並進成分
+   * @param {number} phi    : dで並進後の$Z_{i-1}$軸周りの回転成分（ラジアン）
+   * @return {THREE.Matrix4}  : $\Sigma_{i-1}$から$\Sigma_i$への同次変換行列
+   */
+  transformDH = (a, alpha, d, phi) => {
+    const {cos, sin} = Math;
+    const ret = new THREE.Matrix4().set(
+      cos(phi),               -sin(phi),              0,            a,
+      cos(alpha) * sin(phi),  cos(alpha) * cos(phi),  -sin(alpha),  -d * sin(alpha),
+      sin(alpha) * sin(phi),  sin(alpha) * cos(phi),  cos(alpha),   d * cos(alpha),
+      0,                      0,                      0,            1
+    );
+    return ret;
+  }
+
+  /**
+   * 変換行列からpositionとrotationを返す。
+   * @param  {THREE.Matrix4} matrix : 変換行列
+   * @return {{
+   *   position: THREE.Vector3,
+   *   rotation: THREE.Euler
+   * }} : 変換行列から得られる位置ベクトルとオイラー角
+   */
+  extractPositioning = (matrix) => {
+    let position = new THREE.Vector3();
+    let rotation = new THREE.Quaternion();
+    let _ = new THREE.Vector3();
+    matrix.decompose(position, rotation, _);
+    return {position: position, rotation: new THREE.Euler().setFromQuaternion(rotation)};
+  }
+
+
+  renderIndividually = () => {
+    const transform = this.transformDH;
+    const extract = this.extractPositioning;
+    const DHVars = this.state.DHVars;
+    return (
+      <group>
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          position={this.state.base.position}
+          rotation={this.state.base.rotation}
+          model={
+            <RobotArmCylinder
+              radius={this.state.base.radius}
+              length={this.state.base.length}
+              color={this.state.color}
+              {...this.state.base.model}
+            />
+          }
+        />
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          {...extract(transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi))}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[0].radius}
+              length={this.state.arms[0].length}
+              color={this.state.color}
+              {...this.state.arms[0].model}
+            />
+          }
+        />
+        <group {...this.state.base.origin}>
+          <group {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+          )}>
+            <ThreeAxisArrows origin={this.state.base.origin.position} length={20} visible/>
+          </group>
+        </group>
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+              .multiply(transform(DHVars[2].a, DHVars[2].alpha, DHVars[2].d, DHVars[2].phi))
+          )}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[1].radius}
+              length={this.state.arms[1].length}
+              color={this.state.color}
+            />
+          }
+        />
+        <group {...this.state.base.origin}>
+          <group {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+              .multiply(transform(DHVars[2].a, DHVars[2].alpha, DHVars[2].d, DHVars[2].phi))
+          )}>
+            <Joint radius={this.state.joint.radius} color={this.state.color}/>
+          </group>
+        </group>
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+              .multiply(transform(DHVars[2].a, DHVars[2].alpha, DHVars[2].d, DHVars[2].phi))
+              .multiply(transform(DHVars[3].a, DHVars[3].alpha, DHVars[3].d, DHVars[3].phi))
+          )}
+          model={
+            <RobotArmCylinder
+              radius={this.state.arms[2].radius}
+              length={this.state.arms[2].length}
+              color={this.state.color}
+            />
+          }
+        />
+        <group {...this.state.base.origin}>
+          <group {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+              .multiply(transform(DHVars[2].a, DHVars[2].alpha, DHVars[2].d, DHVars[2].phi))
+              .multiply(transform(DHVars[3].a, DHVars[3].alpha, DHVars[3].d, DHVars[3].phi))
+          )}>
+            <Joint radius={this.state.joint.radius} color={this.state.color}/>
+          </group>
+        </group>
+        <RobotArm
+          origin={this.state.base.origin}
+          visibleAxisArrows
+          {...extract(
+            transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
+              .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
+              .multiply(transform(DHVars[2].a, DHVars[2].alpha, DHVars[2].d, DHVars[2].phi))
+              .multiply(transform(DHVars[3].a, DHVars[3].alpha, DHVars[3].d, DHVars[3].phi))
+              .multiply(transform(DHVars[4].a, DHVars[4].alpha, DHVars[4].d, DHVars[4].phi))
+          )}
+          model={
+            <Joint radius={this.state.joint.radius} color={this.state.color}/>
+          }
+        />
+      </group>
+    );
+  }
+
   renderHierarchically = () => {
     return (
       <group>
@@ -145,6 +300,7 @@ class Robot extends Component {
               />
             }
           >
+            <ThreeAxisArrows origin={this.state.arms[1].origin.position} length={20} visible/>
             <RobotArm
               origin={this.state.arms[1].origin}
               visibleAxisArrows
@@ -186,82 +342,6 @@ class Robot extends Component {
             </RobotArm>
           </RobotArm>
         </RobotArm>
-      </group>
-    );
-  }
-
-  renderIndividually = () => {
-    return (
-      <group>
-        <RobotArm
-          origin={this.state.base.origin}
-          visibleAxisArrows
-          position={this.state.base.position}
-          rotation={this.state.base.rotation}
-          model={
-            <RobotArmCylinder
-              radius={this.state.base.radius}
-              length={this.state.base.length}
-              color={this.state.color}
-              {...this.state.base.model}
-            />
-          }
-        />
-        <RobotArm
-          origin={this.state.base.origin}
-          visibleAxisArrows
-          position={this.state.arms[0].position}
-          rotation={this.state.arms[0].rotation}
-          model={
-            <RobotArmCylinder
-              radius={this.state.arms[0].radius}
-              length={this.state.arms[0].length}
-              color={this.state.color}
-              {...this.state.arms[0].model}
-            />
-          }
-        />
-        <RobotArm
-          origin={this.state.base.origin}
-          visibleAxisArrows
-          position={this.state.arms[1].position}
-          rotation={this.state.arms[1].rotation}
-          model={
-            <RobotArmCylinder
-              radius={this.state.arms[1].radius}
-              length={this.state.arms[1].length}
-              color={this.state.color}
-            />
-          }
-        />
-        <group {...this.state.base.origin}>
-          <Joint radius={this.state.joint.radius} color={this.state.color}/>
-        </group>
-        <RobotArm
-          origin={this.state.base.origin}
-          visibleAxisArrows
-          position={this.state.arms[2].position}
-          rotation={this.state.arms[2].rotation}
-          model={
-            <RobotArmCylinder
-              radius={this.state.arms[2].radius}
-              length={this.state.arms[2].length}
-              color={this.state.color}
-            />
-          }
-        />
-        <group {...this.state.base.origin}>
-          <Joint radius={this.state.joint.radius} color={this.state.color}/>
-        </group>
-        <RobotArm
-          origin={this.state.base.origin}
-          visibleAxisArrows
-          position={this.state.hand.position}
-          rotation={this.state.hand.rotation}
-          model={
-            <Joint radius={this.state.joint.radius} color={this.state.color}/>
-          }
-        />
       </group>
     );
   }
