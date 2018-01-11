@@ -378,6 +378,17 @@ class Robot extends Component {
   }
 }
 
+Robot.defaultProps = {
+  axisArrows: [
+    {visible: true},
+    {visible: true},
+    {visible: true},
+    {visible: true},
+    {visible: true},
+    {visible: true},
+  ]
+}
+
 Robot.propTypes = {
   arms: PropTypes.arrayOf(PropTypes.shape({
     length: PropTypes.number.isRequired,
