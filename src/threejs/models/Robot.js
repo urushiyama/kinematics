@@ -181,7 +181,7 @@ class Robot extends Component {
       <group>
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[0].visible}
           position={this.state.base.position}
           rotation={this.state.base.rotation}
           model={
@@ -195,7 +195,7 @@ class Robot extends Component {
         />
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[1].visible}
           {...extract(transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi))}
           model={
             <RobotArmCylinder
@@ -211,12 +211,16 @@ class Robot extends Component {
             transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
               .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
           )}>
-            <ThreeAxisArrows origin={this.state.base.origin.position} length={20} visible/>
+            <ThreeAxisArrows
+              origin={this.state.base.origin.position}
+              length={20}
+              visible={this.props.axisArrows[2].visible}
+            />
           </group>
         </group>
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[3].visible}
           {...extract(
             transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
               .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
@@ -241,7 +245,7 @@ class Robot extends Component {
         </group>
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[4].visible}
           {...extract(
             transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
               .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
@@ -268,7 +272,7 @@ class Robot extends Component {
         </group>
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[5].visible}
           {...extract(
             transform(DHVars[0].a, DHVars[0].alpha, DHVars[0].d, DHVars[0].phi)
               .multiply(transform(DHVars[1].a, DHVars[1].alpha, DHVars[1].d, DHVars[1].phi))
@@ -289,7 +293,7 @@ class Robot extends Component {
       <group>
         <RobotArm
           origin={this.state.base.origin}
-          visibleAxisArrows
+          visibleAxisArrows={this.props.axisArrows[0].visible}
           position={this.state.base.position}
           rotation={this.state.base.rotation}
           model={
@@ -303,7 +307,7 @@ class Robot extends Component {
         >
           <RobotArm
             origin={this.state.arms[0].origin}
-            visibleAxisArrows
+            visibleAxisArrows={this.props.axisArrows[1].visible}
             position={this.state.arms[0].position}
             rotation={this.state.arms[0].rotation}
             model={
@@ -315,10 +319,14 @@ class Robot extends Component {
               />
             }
           >
-            <ThreeAxisArrows origin={this.state.arms[1].origin.position} length={20} visible/>
+            <ThreeAxisArrows
+              origin={this.state.arms[1].origin.position}
+              length={20}
+              visible={this.props.axisArrows[2].visible}
+            />
             <RobotArm
               origin={this.state.arms[1].origin}
-              visibleAxisArrows
+              visibleAxisArrows={this.props.axisArrows[3].visible}
               position={this.state.arms[1].position}
               rotation={this.state.arms[1].rotation}
               model={
@@ -332,7 +340,7 @@ class Robot extends Component {
               <Joint radius={this.state.joint.radius} color={this.state.color}/>
               <RobotArm
                 origin={this.state.arms[2].origin}
-                visibleAxisArrows
+                visibleAxisArrows={this.props.axisArrows[4].visible}
                 position={this.state.arms[2].position}
                 rotation={this.state.arms[2].rotation}
                 model={
@@ -346,7 +354,7 @@ class Robot extends Component {
                 <Joint radius={this.state.joint.radius} color={this.state.color}/>
                 <RobotArm
                   origin={this.state.hand.origin}
-                  visibleAxisArrows
+                  visibleAxisArrows={this.props.axisArrows[5].visible}
                   position={this.state.hand.position}
                   rotation={this.state.hand.rotation}
                   model={
@@ -374,6 +382,9 @@ Robot.propTypes = {
   arms: PropTypes.arrayOf(PropTypes.shape({
     length: PropTypes.number.isRequired,
     phi: PropTypes.number.isRequired
+  })),
+  axisArrows: PropTypes.arrayOf(PropTypes.shape({
+    visible: PropTypes.bool.isRequired
   })),
   renderIndividually: PropTypes.bool
 }

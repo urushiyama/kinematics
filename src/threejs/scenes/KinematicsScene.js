@@ -35,6 +35,7 @@ class KinematicsScene extends Component {
               <Robot
                 color={this.props.colors.individually}
                 arms={this.props.arms}
+                axisArrows={this.props.axisArrows}
                 renderIndividually
               />
             </group>
@@ -42,6 +43,7 @@ class KinematicsScene extends Component {
               <Robot
                 color={this.props.colors.hierarchically}
                 arms={this.props.arms}
+                axisArrows={this.props.axisArrows}
               />
             </group>
           </group>
