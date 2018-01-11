@@ -32,10 +32,17 @@ class KinematicsScene extends Component {
         <World onAnimate={this.props.onAnimate} {...this.props} canvasDOM={this.state.canvas}>
           <group>
             <group {...this.state.renderIndividually}>
-              <Robot arms={this.props.arms} renderIndividually />
+              <Robot
+                color={this.props.colors.individually}
+                arms={this.props.arms}
+                renderIndividually
+              />
             </group>
             <group {...this.state.renderHierarchically}>
-              <Robot arms={this.props.arms}/>
+              <Robot
+                color={this.props.colors.hierarchically}
+                arms={this.props.arms}
+              />
             </group>
           </group>
         </World>

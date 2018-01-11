@@ -87,26 +87,41 @@ class Robot extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // update arms
+    const newColor = nextProps.color || this.state.color;
+
+    let newDHVars = this.state.DHVars.map(paramsObj => Object.assign({}, paramsObj));
     let newArms = this.state.arms.slice();
+
     // update arm[0]
     newArms[0].length = nextProps.arms[0].length;
     newArms[0].rotation = new THREE.Euler(0, 0, THREE.Math.degToRad(nextProps.arms[0].phi));
     newArms[0].model.position = new THREE.Vector3(0, 0, nextProps.arms[0].length / 2);
+    newDHVars[1].d = nextProps.arms[0].length;
+    newDHVars[0].phi = THREE.Math.degToRad(nextProps.arms[0].phi);
+
     // update arm[1]
     newArms[1].length = nextProps.arms[1].length;
     newArms[1].origin = this.updateOrigin(this.state.arms[1].origin, nextProps.arms[0].length, 'Z');
     newArms[1].rotation = new THREE.Euler(0, 0, THREE.Math.degToRad(nextProps.arms[1].phi));
+    newDHVars[3].a = nextProps.arms[1].length;
+    newDHVars[2].phi = THREE.Math.degToRad(nextProps.arms[1].phi);
+
     // update arm[2]
     newArms[2].length = nextProps.arms[2].length;
     newArms[2].origin = this.updateOrigin(this.state.arms[2].origin, nextProps.arms[1].length, 'X');
     newArms[2].rotation = new THREE.Euler(0, 0, THREE.Math.degToRad(nextProps.arms[2].phi));
+    newDHVars[4].a = nextProps.arms[2].length;
+    newDHVars[3].phi = THREE.Math.degToRad(nextProps.arms[2].phi);
+
     // update hand
     let newHand = Object.assign({}, this.state.hand);
     newHand.origin = this.updateOrigin(this.state.hand.origin, nextProps.arms[2].length, 'X');
+
     this.setState({
+      color: newColor,
       arms: newArms,
-      hand: newHand
+      hand: newHand,
+      DHVars: newDHVars
     });
   }
 
