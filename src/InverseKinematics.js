@@ -13,6 +13,7 @@ import {
 } from 'material-ui';
 import { Link } from 'react-router-dom';
 import React, { Component } from 'react';
+import * as THREE from 'three';
 
 import InverseKinematicsScene from './threejs/scenes/InverseKinematicsScene';
 import NavigationBar from './NavigationBar';
@@ -56,14 +57,16 @@ const styles = {
 class InverseKinematics extends Component {
   constructor(props) {
     super(props);
+    this.updateQueryLimit = 0.999;
     this.state = {
+      base: {length: 4, phi: 0},
       arms: [
         {length: 10, phi: 0},
         {length: 10, phi: 20},
         {length: 10, phi: -40}
       ],
       target: {X: 0, Y: 0, Z: 0},
-      disabledMove: true,
+      move: true,
       input: {
         arms: [
           {length: '10', phi: '0'},
@@ -204,8 +207,89 @@ class InverseKinematics extends Component {
     }
   }
 
-  onAnimate = () => {
+  onChangeMove = (event) => {
+    this.setState({move: !this.state.move});
+  }
 
+  jacobian = (query) => {
+    const {phi1, phi3, a4, phi4, a5} = query;
+    // q = (phi1, phi3, phi4)T
+    const {sin, cos} = Math;
+    const dr1_dq1 = -sin(phi1)*(a4*cos(phi3)+a5*cos(phi3+phi4));
+    const dr1_dq2 = -cos(phi1)*(a4*sin(phi3)+a5*sin(phi3+phi4));
+    const dr1_dq3 = -cos(phi1)*a5*sin(phi3+phi4);
+    const dr2_dq1 = cos(phi1)*(a4*cos(phi3)+a5*cos(phi3+phi4));
+    const dr2_dq2 = -sin(phi1)*(a4*sin(phi3)+a5*sin(phi3+phi4));
+    const dr2_dq3 = -sin(phi1)*a5*sin(phi3+phi4);
+    const dr3_dq1 = 0;
+    const dr3_dq2 = a4*cos(phi3)+a5*cos(phi3+phi4);
+    const dr3_dq3 = a5*cos(phi3+phi4);
+    const ret = new THREE.Matrix3().set(
+      dr1_dq1, dr1_dq2, dr1_dq3,
+      dr2_dq1, dr2_dq2, dr2_dq3,
+      dr3_dq1, dr3_dq2, dr3_dq3
+    );
+    return ret;
+  }
+
+  updateQuery = (query) => {
+    const {sin, cos} = Math;
+    const {d1, phi1, d2, phi3, a4, phi4, a5} = query;
+    let newQuery = Object.assign({}, query);
+    let newQueryVector = new THREE.Vector3();
+    const queryVector = new THREE.Vector3(phi1, phi3, phi4);
+    const riVector = new THREE.Vector3(
+      cos(phi1)*cos(phi3+phi4)*a5 + cos(phi1)*cos(phi3)*a4,
+      sin(phi1)*cos(phi3+phi4)*a5 + sin(phi1)*cos(phi3)*a4,
+      sin(phi3+phi4)*a5 + sin(phi3)*a4 + d1 + d2
+    );
+    const rdVector = new THREE.Vector3(
+      this.state.target.X,
+      this.state.target.Y,
+      this.state.target.Z
+    );
+    const J = this.jacobian(query);
+    const invJMatrix3 = new THREE.Matrix3().getInverse(J);
+    const riMinusrd = riVector.add(rdVector.negate());
+    newQueryVector
+      .add(queryVector)
+      .add(riMinusrd.applyMatrix3(invJMatrix3).negate());
+    const delta = (
+      (cos(newQueryVector.x)*cos(phi1)+sin(newQueryVector.x)*sin(phi1))
+      *(cos(newQueryVector.y)*cos(phi3)+sin(newQueryVector.y)*sin(phi3))
+      *(cos(newQueryVector.z)*cos(phi4)+sin(newQueryVector.z)*sin(phi4))
+    );
+    newQuery.phi1 = newQueryVector.x;
+    newQuery.phi3 = newQueryVector.y;
+    newQuery.phi4 = newQueryVector.z;
+    return {query: newQuery, delta: delta};
+  }
+
+  onAnimate = () => {
+    if (this.state.move) {
+      const {query, delta} = this.updateQuery({
+        d1: this.state.base.length,
+        phi1: THREE.Math.degToRad((this.state.arms[0].phi + 360) % 360),
+        d2: this.state.arms[0].length,
+        phi3: THREE.Math.degToRad((this.state.arms[1].phi + 360) % 360),
+        a4: this.state.arms[1].length,
+        phi4: THREE.Math.degToRad((this.state.arms[2].phi + 360) % 360),
+        a5: this.state.arms[2].length
+      });
+      if (delta < this.updateQueryLimit) {
+        const newArms = this.state.arms.map(object => Object.assign({}, object));
+        newArms[0].phi = THREE.Math.radToDeg(query.phi1);
+        newArms[1].phi = THREE.Math.radToDeg(query.phi3);
+        newArms[2].phi = THREE.Math.radToDeg(query.phi4);
+        const newInput = Object.assign({}, this.state.input);
+        newInput.arms[0].phi = `${newArms[0].phi}`;
+        newInput.arms[1].phi = `${newArms[1].phi}`;
+        newInput.arms[2].phi = `${newArms[2].phi}`;
+        this.setState({arms: newArms, input: newInput});
+      } else {
+        this.setState({move: false});
+      }
+    }
   }
 
   render() {
@@ -218,6 +302,7 @@ class InverseKinematics extends Component {
               <Grid item xs={12} md={8} style={styles.item}>
                 <div style={styles.view}>
                   <InverseKinematicsScene
+                    base={this.state.base}
                     arms={this.state.arms}
                     axisArrows={this.state.axisArrows}
                     color={styles.robot.backgroundColor}
@@ -257,7 +342,18 @@ class InverseKinematics extends Component {
                                   value={this.state.input.target.Z}
                                   onChange={this.onChangeTarget("Z")}
                                 />
-                                <Button raised disabled={this.state.disabledMove}>手先位置を移動する</Button>
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={
+                                      <Switch
+                                        checked={this.state.move}
+                                        onChange={this.onChangeMove}
+                                      />
+                                    }
+                                    label="手先位置を移動する"
+                                  />
+                                </FormGroup>
+                                {/* <Switch disabled={this.state.disabledMove}>手先位置を移動する</Switch> */}
                               </FormGroup>
                             </Grid>
                           </Grid>

@@ -90,7 +90,14 @@ class Robot extends Component {
     const newColor = nextProps.color || this.state.color;
 
     let newDHVars = this.state.DHVars.map(paramsObj => Object.assign({}, paramsObj));
+    let newBase = Object.assign({}, this.state.base);
     let newArms = this.state.arms.slice();
+
+    // update base
+    if (nextProps.base != null) {
+      newBase.length = nextProps.base.length;
+      newDHVars[0].d = nextProps.base.length;
+    }
 
     // update arm[0]
     newArms[0].length = nextProps.arms[0].length;
@@ -390,6 +397,10 @@ Robot.defaultProps = {
 }
 
 Robot.propTypes = {
+  base: PropTypes.shape({
+    length: PropTypes.number.isRequired,
+    phi: PropTypes.number.isRequired
+  }),
   arms: PropTypes.arrayOf(PropTypes.shape({
     length: PropTypes.number.isRequired,
     phi: PropTypes.number.isRequired
