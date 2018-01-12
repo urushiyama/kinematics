@@ -47,6 +47,9 @@ const Dashboard = props => {
                 <Link to="/Kinematics">
                   <Button raised>順運動学のデモ</Button>
                 </Link>
+                <Link to="/InverseKinematics">
+                  <Button raised>逆運動学のデモ</Button>
+                </Link>
               </Paper>
             </Grid>
           </Grid>
