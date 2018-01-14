@@ -255,9 +255,9 @@ class InverseKinematics extends Component {
       .add(queryVector)
       .add(riMinusrd.applyMatrix3(invJMatrix3).negate());
     const delta = (
-      (cos(newQueryVector.x)*cos(phi1)+sin(newQueryVector.x)*sin(phi1))
-      *(cos(newQueryVector.y)*cos(phi3)+sin(newQueryVector.y)*sin(phi3))
-      *(cos(newQueryVector.z)*cos(phi4)+sin(newQueryVector.z)*sin(phi4))
+      ((cos(newQueryVector.x)*cos(phi1)+sin(newQueryVector.x)*sin(phi1))
+      +(cos(newQueryVector.y)*cos(phi3)+sin(newQueryVector.y)*sin(phi3))
+      +(cos(newQueryVector.z)*cos(phi4)+sin(newQueryVector.z)*sin(phi4))) / 3.0
     );
     newQuery.phi1 = newQueryVector.x;
     newQuery.phi3 = newQueryVector.y;
